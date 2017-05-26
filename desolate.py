@@ -12,8 +12,8 @@ def allWisconsinPoints(latlong=True, shortList=False):
     TODO: Make this function not return coordinates that don't satisfy inWisconsinBorders()
     '''
 
-    latstep = 1.0 if shortList else 0.01
-    lonstep = -1.0 if shortList else -0.01
+    latstep = 1.0 if shortList else 0.1
+    lonstep = -1.0 if shortList else -0.1
 
     wisLatitudes = numpy.arange(42,44,latstep)
     wisLongitudes = numpy.arange(-87,-90,lonstep)
@@ -24,7 +24,7 @@ def distanceToNearestAirport(point, allAirports):
     return min( [getDistance(point, eachAirport) for eachAirport in allAirports] )
 
 def getDistance(point, airport):
-    print(point, airport,vincenty(point,airport).nautical)
+    # print(point, airport,vincenty(point,airport).nautical)
     return great_circle(point,airport).nautical
 
 def main():
@@ -38,7 +38,7 @@ def main():
 
     # print( getDistance(reversedButt[52],reversedButt[4] ) )
 
-    # allAirports = allWisconsinAirportsList()
+    allAirports = allWisconsinAirportsList()
 
     # point = (45.0,-89.0)
     # point2 = allAirports[3]
@@ -47,9 +47,9 @@ def main():
 
     # print( min([getDistance(point, eachAirport) for eachAirport in allAirports] ) )
 
-    for eachPoint in allWisconsinPoints(True,True):
-        print(eachPoint)
-        print(distanceToNearestAirport(eachPoint, allAirports) )
+    print( max( [distanceToNearestAirport(eachpoint, allAirports) for eachpoint in allWisconsinPoints()] ) )
+
+
 
     
 
