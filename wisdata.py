@@ -3,32 +3,10 @@ from math import radians, cos, sin, asin, sqrt
 import itertools
 import numpy as np
 
-def haversine(a,b):
-    """
-    Calculate the great circle distance between two points 
-    on the earth (specified in decimal degrees)
-    """
-    
-    #extract lat/lon from input points
-    lat1 = a[1]
-    lon1 = a[0]
-    lat2 = b[1]
-    lon2 = b[0]
-    
-    # convert decimal degrees to radians 
-    lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
-    # haversine formula 
-    dlon = lon2 - lon1 
-    dlat = lat2 - lat1 
-    a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
-    c = 2 * asin(sqrt(a)) 
-    # 6367 = Radius of earth in kilometers. Use 3956 for miles, 3438.1451 for nautical
-    dist = 3438.1451 * c
-    return dist
 
 
-def allWisconsinAirportsList():
-    return [
+def allWisconsinAirportsList(lonlat=False):
+    airports = [
     (-89.0501022338867,44.3042984008789),
     (-90.3891983032226,44.0099983215332),
     (-92.6557998657226,45.0318984985351),
@@ -627,12 +605,8 @@ def allWisconsinAirportsList():
     (-90.179702758789,44.6772003173828),
     (-91.4585037231445,46.576301574707) ]
 
-def findNearestAirport(point, allAirports):
-    nearestAirportDist = 99999
-    for eachAirport in allAirports:
-        if haversine(point, eachAirport) < nearestAirportDist:
-            nearestAirportDist = haversine(point, eachAirport)
-    return nearestAirportDist
+    return airports if lonlat else [(b,a) for a,b in airports]
+
 
 def main():
     
