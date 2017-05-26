@@ -26,10 +26,6 @@ def haversine(a,b):
     dist = 3438.1451 * c
     return dist
 
-def allWisconsinPointsGenerator():
-    wisLatitudes = np.arange(42,44,0.01)
-    wisLongitudes = np.arange(-87,-90,-0.01)
-    yield i for i in itertools.product(wisLongitudes,wisLatitudes)
 
 def allWisconsinAirportsList():
     return [
@@ -653,4 +649,4 @@ def main():
     
     print(furthestAirport,thePoint)
         
-main()
+# main()
