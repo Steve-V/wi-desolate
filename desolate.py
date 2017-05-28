@@ -8,7 +8,6 @@ import numpy, itertools
 
 def allWisconsinPoints(shortList=False):
     '''Return every possible latitude and longitude coordinate occurring in Wisconsin's bounding box.
-    Ordinarily returns lat/long, but passing reversed=True returns long/lat
     Passing shortList only returns a handful of points, for testing purposes
     TODO: Make this function not return coordinates that don't satisfy inWisconsinBorders()
     '''
@@ -25,17 +24,10 @@ def distanceToNearestAirport(point, allAirports):
     '''Given a point, determine the distance to the nearest airport'''
     return min( [great_circle(point,eachAirport).nautical for eachAirport in allAirports] )
 
-def getDistance(point, airport):
-    return great_circle(point,airport).nautical
-
 def main():
 
     allAirports = allWisconsinAirportsList()
 
     print( max( [(eachpoint, distanceToNearestAirport(eachpoint, allAirports) ) for eachpoint in tqdm( allWisconsinPoints(), total=600 ) ], key=lambda item: item[1] ) ) 
-
-
-
-    
 
 main()
