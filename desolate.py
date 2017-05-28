@@ -3,6 +3,7 @@
 #import os
 from wisdata import allWisconsinAirportsList
 from geopy.distance import great_circle, vincenty
+from tqdm import tqdm
 import numpy, itertools
 
 def allWisconsinPoints(latlong=True, shortList=False):
@@ -47,7 +48,7 @@ def main():
 
     # print( min([getDistance(point, eachAirport) for eachAirport in allAirports] ) )
 
-    print( max( [distanceToNearestAirport(eachpoint, allAirports) for eachpoint in allWisconsinPoints()] ) )
+    print( max( [(eachpoint, distanceToNearestAirport(eachpoint, allAirports) ) for eachpoint in tqdm( allWisconsinPoints(), total=600 ) ], key=lambda item: item[1] ) ) 
 
 
 
