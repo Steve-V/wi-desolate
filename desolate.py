@@ -1,23 +1,25 @@
 #!/usr/bin/env python
 
 #import os
-from wisdata import allWisconsinAirportsList
+from wisdata import allWisconsinAirportsList, wisconsinBorders
 from geopy.distance import great_circle, vincenty
 from tqdm import tqdm
+from shapely.geometry import Polygon, Point, shape
 import numpy, itertools
 
 def allWisconsinPoints(shortList=False):
-    '''Return every possible latitude and longitude coordinate occurring in Wisconsin's bounding box.
+    '''Return every possible latitude and longitude coordinate occurring in Wisconsin.
     Passing shortList only returns a handful of points, for testing purposes
-    TODO: Make this function not return coordinates that don't satisfy inWisconsinBorders()
     '''
 
     latstep = 1.0 if shortList else 0.1
     lonstep = -1.0 if shortList else -0.1
+    borders = Polygon(wisconsinBorders())
 
     wisLatitudes = numpy.arange(42,44,latstep)
     wisLongitudes = numpy.arange(-87,-90,lonstep)
-    return itertools.product(wisLatitudes,wisLongitudes) 
+    return (i for i in itertools.product(wisLatitudes,wisLongitudes) if Point(i[0],i[1]).within(borders) )
+    # return itertools.product(wisLatitudes,wisLongitudes)
     # return tertools.product(wisLongitudes,wisLatitudes) # if for some reason we ever want to use long-lat ordering
 
 def distanceToNearestAirport(point, allAirports):
