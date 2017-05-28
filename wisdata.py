@@ -1,9 +1,3 @@
-from math import radians, cos, sin, asin, sqrt
-
-import itertools
-import numpy as np
-
-
 
 def allWisconsinAirportsList(lonlat=False):
     airports = [
@@ -608,19 +602,3 @@ def allWisconsinAirportsList(lonlat=False):
     return airports if lonlat else [(b,a) for a,b in airports]
 
 
-def main():
-    
-    allWisconsin = getWisconsin()
-    furthestAirport = 0
-    
-    thePoint = ("butt","butt")
-    
-    for eachPoint in allWisconsin:
-        nearestDist = findNearestAirport(eachPoint , airports)
-        if nearestDist > furthestAirport:
-            furthestAirport = nearestDist
-            thePoint = eachPoint
-    
-    print(furthestAirport,thePoint)
-        
-# main()
