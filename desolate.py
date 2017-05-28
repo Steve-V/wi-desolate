@@ -30,10 +30,6 @@ def main():
 
     allAirports = allWisconsinAirportsList()
 
-    for eachpoint in allWisconsinPoints():
-        print( eachpoint, distanceToNearestAirport(eachpoint, allAirports) )
-
-    # print( [(eachpoint, distanceToNearestAirport(eachpoint, allAirports)  ) for eachpoint in tqdm( allWisconsinPoints(), total=325 ) ] )
-    # print( max( [(eachpoint, distanceToNearestAirport(eachpoint, allAirports) ) for eachpoint in tqdm( allWisconsinPoints(), total=325 ) ], key=lambda item: item[1] ) ) 
+    print( max( [(eachpoint, distanceToNearestAirport(eachpoint, allAirports) ) for eachpoint in tqdm( allWisconsinPoints(), total=1675 ) ], key=lambda item: item[1] ) ) 
 
 main()
