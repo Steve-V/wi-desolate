@@ -23,7 +23,7 @@ def allWisconsinPoints(shortList=False):
 
 def distanceToNearestAirport(point, allAirports):
     '''Given a point, determine the distance to the nearest airport'''
-    return min( [getDistance(point, eachAirport) for eachAirport in allAirports] )
+    return min( [great_circle(point,eachAirport).nautical for eachAirport in allAirports] )
 
 def getDistance(point, airport):
     return great_circle(point,airport).nautical
