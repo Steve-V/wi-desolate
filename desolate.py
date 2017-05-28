@@ -16,8 +16,8 @@ def allWisconsinPoints(shortList=False):
     lonstep = -1.0 if shortList else -0.1
     borders = Polygon(wisconsinBorders())
 
-    wisLatitudes = numpy.arange(42,44,latstep)
-    wisLongitudes = numpy.arange(-87,-90,lonstep)
+    wisLatitudes = numpy.arange(42,47,latstep)
+    wisLongitudes = numpy.arange(-87,-93,lonstep)
     return (i for i in itertools.product(wisLatitudes,wisLongitudes) if Point(i[0],i[1]).within(borders) )
     # return itertools.product(wisLatitudes,wisLongitudes)
     # return tertools.product(wisLongitudes,wisLatitudes) # if for some reason we ever want to use long-lat ordering
