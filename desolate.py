@@ -24,17 +24,18 @@ def allWisconsinPoints(shortList=False):
 
 def distanceToNearestAirport(point, allAirports):
     '''Given a point, determine the distance to the nearest airport'''
-    return min( [great_circle(point,eachAirport).nautical for eachAirport in allAirports] )
+    return min( [great_circle(point, (eachAirport['lat'],eachAirport['long'])).nautical for eachAirport in allAirports] )
 
 def main():
 
     # allAirports = allWisconsinAirportsList()
 
-    newairports = pickle.load(open('airportpickle','r'))
+    allAirports = pickle.load(open('airportpickle','rb'))
 
-    for eachitem in newairports:
-        print eachitem['lat']
+    furthestpoint, howfar = ( max( [(eachpoint, distanceToNearestAirport(eachpoint, allAirports) ) for eachpoint in tqdm( allWisconsinPoints(), total=1675 ) ], key=lambda item: item[1] ) ) 
 
-    # print( max( [(eachpoint, distanceToNearestAirport(eachpoint, allAirports) ) for eachpoint in tqdm( allWisconsinPoints(), total=1675 ) ], key=lambda item: item[1] ) ) 
+    closestairport = min( [(eachAirport['name'],great_circle(furthestpoint,(eachAirport['lat'],eachAirport['long'])).nautical) for eachAirport in allAirports], key=lambda item: item[1] )
+
+    print(closestairport, furthestpoint)
 
 main()
