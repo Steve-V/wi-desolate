@@ -5,7 +5,7 @@ from wisdata import allWisconsinAirportsList, wisconsinBorders
 from geopy.distance import great_circle, vincenty
 from tqdm import tqdm
 from shapely.geometry import Polygon, Point, shape
-import numpy, itertools
+import numpy, itertools, pickle
 
 def allWisconsinPoints(shortList=False):
     '''Return every possible latitude and longitude coordinate occurring in Wisconsin.
@@ -28,8 +28,13 @@ def distanceToNearestAirport(point, allAirports):
 
 def main():
 
-    allAirports = allWisconsinAirportsList()
+    # allAirports = allWisconsinAirportsList()
 
-    print( max( [(eachpoint, distanceToNearestAirport(eachpoint, allAirports) ) for eachpoint in tqdm( allWisconsinPoints(), total=1675 ) ], key=lambda item: item[1] ) ) 
+    newairports = pickle.load(open('airportpickle','r'))
+
+    for eachitem in newairports:
+        print eachitem['lat']
+
+    # print( max( [(eachpoint, distanceToNearestAirport(eachpoint, allAirports) ) for eachpoint in tqdm( allWisconsinPoints(), total=1675 ) ], key=lambda item: item[1] ) ) 
 
 main()
