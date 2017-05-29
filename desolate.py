@@ -12,30 +12,55 @@ def allWisconsinPoints(shortList=False):
     Passing shortList only returns a handful of points, for testing purposes
     '''
 
+    # What should we use for latitude/longitude increments?
     latstep = 1.0 if shortList else 0.1
     lonstep = -1.0 if shortList else -0.1
+
+    # Use shapely to build a polygon representing the land area of Wisconsin
+    # I used Google Earth to get a KML polygon of Wisconsin's borders and then manually edited the file to get just the coordinates out of the KML. A utility to do this wouldn't be a bad thing.
     borders = Polygon(wisconsinBorders())
 
+    # Don't forget to update this to be the actual bounding lat/long box for the state
     wisLatitudes = numpy.arange(42,47,latstep)
     wisLongitudes = numpy.arange(-87,-93,lonstep)
+
+    # Return all points that meet the criteria for being in Wisconsin
     return (i for i in itertools.product(wisLatitudes,wisLongitudes) if Point(i[0],i[1]).within(borders) )
-    # return itertools.product(wisLatitudes,wisLongitudes)
-    # return tertools.product(wisLongitudes,wisLatitudes) # if for some reason we ever want to use long-lat ordering
 
 def distanceToNearestAirport(point, allAirports):
-    '''Given a point, determine the distance to the nearest airport'''
+    '''Given a point, determine the distance to the nearest airport
+    Point is a tuple of the following format: (latitude, longitude)
+    allAirports is an OrderedDict containing at least value['lat'] and value['long']
+    See here for more on OrderedDicts: https://docs.python.org/3/library/csv.html
+    great_circle is provided by geopy, nautical is unnecessary but nice for verification'''
     return min( [great_circle(point, (eachAirport['lat'],eachAirport['long'])).nautical for eachAirport in allAirports] )
 
 def main():
 
-    # allAirports = allWisconsinAirportsList()
+    '''Figure out the place in Wisconsin that is furthest from the nearest airport'''
 
+    # Airport data is stored on disk as a pickled OrderedDict in the working directory
     allAirports = pickle.load(open('airportpickle','rb'))
 
+    # this list comprehension walks through allWisconsinPoints and returns a list of tuples: (the point being tested, and the distance from that point to the nearest airport)
+    # the max function pulls out only the highest-distance value from the list of tuples
+    # key=lambda item: item[1] tells max that it needs to sort based on the second item in the tuple, in this case, distance
+    # tqdm is for timing the loop and showing a progress bar
+    # When this listcomp finishes, we have our desired point.
+    # This listcomp is where all of the slowdown happens
     furthestpoint, howfar = ( max( [(eachpoint, distanceToNearestAirport(eachpoint, allAirports) ) for eachpoint in tqdm( allWisconsinPoints(), total=1675 ) ], key=lambda item: item[1] ) ) 
 
+    #Since i want to know which airport is nearest to the point, we run our known furthest point back through the distance algorithm again. 
+    # This listcomp takes our known furthest point and runs the calculation once more to find the nearest airport.
+    # It outputs a tuple of the following format: (airportname, distance)
+    # As above, key=lambda item:item[1] is used to tell min to sort based on distance
     closestairport = min( [(eachAirport['name'],great_circle(furthestpoint,(eachAirport['lat'],eachAirport['long'])).nautical) for eachAirport in allAirports], key=lambda item: item[1] )
 
-    print(closestairport, furthestpoint)
+    # Output!
+    print("Latitude of most desolate point: {} 
+            \nLongitude of furthest point: {} 
+            \nNearest airport to point: {}
+            \nDistance from point to airport: {}"
+            .format( furthestpoint[0] , furthestpoint[1] , closestairport[0] , closestairport[1]) )
 
 main()
