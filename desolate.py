@@ -48,7 +48,7 @@ def main():
     # tqdm is for timing the loop and showing a progress bar
     # When this listcomp finishes, we have our desired point.
     # This listcomp is where all of the slowdown happens
-    furthestpoint, howfar = ( max( [(eachpoint, distanceToNearestAirport(eachpoint, allAirports) ) for eachpoint in tqdm( allWisconsinPoints(), total=1675 ) ], key=lambda item: item[1] ) ) 
+    furthestpoint, howfar = ( max( ((eachpoint, distanceToNearestAirport(eachpoint, allAirports) ) for eachpoint in tqdm( allWisconsinPoints(), total=1675 ) ), key=lambda item: item[1] ) ) 
 
     #Since i want to know which airport is nearest to the point, we run our known furthest point back through the distance algorithm again. 
     # This listcomp takes our known furthest point and runs the calculation once more to find the nearest airport.
@@ -57,10 +57,10 @@ def main():
     closestairport = min( [(eachAirport['name'],great_circle(furthestpoint,(eachAirport['lat'],eachAirport['long'])).nautical) for eachAirport in allAirports], key=lambda item: item[1] )
 
     # Output!
-    print("Latitude of most desolate point: {} 
-            \nLongitude of furthest point: {} 
-            \nNearest airport to point: {}
-            \nDistance from point to airport: {}"
+    print("Latitude of most desolate point: {} \n"
+            "Longitude of furthest point: {} \n"
+            "Nearest airport to point: {}\n"
+            "Distance from point to airport: {}\n"
             .format( furthestpoint[0] , furthestpoint[1] , closestairport[0] , closestairport[1]) )
 
 main()
