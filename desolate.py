@@ -1,15 +1,15 @@
 #!/usr/bin/env python
 
 #import os
-from wisdata import allWisconsinAirportsList, wisconsinBorders
-from geopy.distance import great_circle, vincenty
+from wisdata import wisconsinBorders
+from geopy.distance import great_circle
 from tqdm import tqdm
-from shapely.geometry import Polygon, Point, shape
+from shapely.geometry import Polygon, Point
 import numpy, itertools, pickle
 
 def allWisconsinPoints(shortList=False):
     '''Return every possible latitude and longitude coordinate occurring in Wisconsin.
-    Passing shortList only returns a handful of points, for testing purposes
+    Passing shortList results in a much coarser grid, for testing purposes
     '''
 
     # What should we use for latitude/longitude increments?
