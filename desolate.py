@@ -42,18 +42,17 @@ def main():
     # Airport data is stored on disk as a pickled OrderedDict in the working directory
     allAirports = pickle.load(open('airportpickle','rb'))
 
-    # this list comprehension walks through allWisconsinPoints and returns a list of tuples: (the point being tested, and the distance from that point to the nearest airport)
+    # this list comprehension walks through allWisconsinPoints and returns a list of tuples: (the distance from a point to the nearest airport, and the point itself)
     # the max function pulls out only the highest-distance value from the list of tuples
-    # key=lambda item: item[1] tells max that it needs to sort based on the second item in the tuple, in this case, distance
     # tqdm is for timing the loop and showing a progress bar
     # When this listcomp finishes, we have our desired point.
     # This listcomp is where all of the slowdown happens
-    furthestpoint, howfar = ( max( ((eachpoint, distanceToNearestAirport(eachpoint, allAirports) ) for eachpoint in tqdm( allWisconsinPoints(), total=1675 ) ), key=lambda item: item[1] ) ) 
+    howfar, furthestpoint = ( max( ((distanceToNearestAirport(eachpoint, allAirports), eachpoint ) for eachpoint in tqdm( allWisconsinPoints(), total=1675 ) ) ) ) 
 
     #Since i want to know which airport is nearest to the point, we run our known furthest point back through the distance algorithm again. 
     # This listcomp takes our known furthest point and runs the calculation once more to find the nearest airport.
     # It outputs a tuple of the following format: (airportname, distance)
-    # As above, key=lambda item:item[1] is used to tell min to sort based on distance
+    # key=lambda item:item[1] is used to tell min to sort based on the second item in the tuple, in this case, distance
     closestairport = min( [(eachAirport['name'],great_circle(furthestpoint,(eachAirport['lat'],eachAirport['long'])).nautical) for eachAirport in allAirports], key=lambda item: item[1] )
 
     # Output!
