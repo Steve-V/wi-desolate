@@ -1,31 +1,37 @@
 #!/usr/bin/env python
 
 #import os
-from wisdata import wisconsinBorders
 from geopy.distance import great_circle
 from tqdm import tqdm
 from shapely.geometry import Polygon, Point
 import numpy, itertools, pickle
 
-def allWisconsinPoints(shortList=False):
-    '''Return every possible latitude and longitude coordinate occurring in Wisconsin.
-    Passing shortList results in a much coarser grid, for testing purposes
+def buildGrid():
+    '''Return a grid of all latitude and longitude coordinates in the state, at whatever resolution. One of these will be our solution point.
     '''
 
-    # What should we use for latitude/longitude increments?
-    latstep = 1.0 if shortList else 0.1
-    lonstep = -1.0 if shortList else -0.1
+    # Step by a full degree for a coarse grid or a tenth of a degree for fine
+    #latstep = 1.0
+    #lonstep = -1.0
+    latstep = 0.1
+    lonstep = -0.1
 
-    # Use shapely to build a polygon representing the land area of Wisconsin
-    # I used Google Earth to get a KML polygon of Wisconsin's borders and then manually edited the file to get just the coordinates out of the KML. A utility to do this wouldn't be a bad thing.
-    borders = Polygon(wisconsinBorders())
+    # Use shapely to build a polygon representing the land area of the state
+    # For states like Colorado this is trivial but for non-square states we would import the coordinate list from a separate file
+    stateBorders = [
+        (-109.0448,37.0004), 
+        (-102.0424,36.9949), 
+        (-102.0534,41.0006), 
+        (-109.0489, 40.9996), 
+        (-109.0448, 37.0004)]
+    borders = Polygon( stateBorders )
 
-    # Don't forget to update this to be the actual bounding lat/long box for the state
-    wisLatitudes = numpy.arange(42,47,latstep)
-    wisLongitudes = numpy.arange(-87,-93,lonstep)
+    # This represents the bounding latitude and longitude of the state. With a state like Colorado this approximates the actual borders, but with a state such as Florida this would also contain much ocean.
+    latitudeBox = numpy.arange(35,43,latstep)
+    longitudeBox = numpy.arange(-101,-110,lonstep)
 
-    # Return all points that meet the criteria for being in Wisconsin
-    return (i for i in itertools.product(wisLatitudes,wisLongitudes) if Point(i[0],i[1]).within(borders) )
+    # Return all points that meet the criteria for being within the actual state borders.  For example, remove all ocean from Florida, leaving only land area.
+    return (i for i in itertools.product(latitudeBox,longitudeBox) if Point(i[1],i[0]).within(borders) )
 
 def distanceToNearestAirport(point, allAirports):
     '''Given a point, determine the distance to the nearest airport
@@ -37,25 +43,28 @@ def distanceToNearestAirport(point, allAirports):
 
 def main():
 
-    '''Figure out the place in Wisconsin that is furthest from the nearest airport'''
+    '''Figure out the place in a state that is furthest from the nearest airport'''
 
     # Airport data is stored on disk as a pickled OrderedDict in the working directory
-    allAirports = pickle.load(open('airportpickle','rb'))
+    allAirports = {
+        'long': -104.8493156, 'lat': 39.57013424, 'code': 'APA',
+        'long': -104.6731767, 'lat': 39.86167312, 'code': 'DEN',
+        'long': -104.5376322, 'lat': 39.78420646, 'code': 'FTG',
+        'long': -105.1172046, 'lat': 39.90881199, 'code': 'BJC',
+        }
 
     # this list comprehension walks through allWisconsinPoints and returns a list of tuples: (the distance from a point to the nearest airport, and the point itself)
     # the max function pulls out only the highest-distance value from the list of tuples
-    # tqdm is for timing the loop and showing a progress bar
-    # When this listcomp finishes, we have our desired point.
-    # This listcomp is where all of the slowdown happens
+
     howfar, furthestpoint = (max(
         ((distanceToNearestAirport(eachpoint, allAirports), eachpoint )
-        for eachpoint in tqdm( allWisconsinPoints(), total=1675 ) ) ) ) 
+        for eachpoint in buildGrid() ) ) ) 
 
     #Since i want to know which airport is nearest to the point, we run our known furthest point back through the distance algorithm again. 
     # This listcomp takes our known furthest point and runs the calculation once more to find the nearest airport.
     # It outputs a tuple of the following format: (distance, airportname)
     result = min( [
-        (great_circle(furthestpoint, (eachAirport['lat'], eachAirport['long']) ).nautical, eachAirport['name'])
+        (great_circle(furthestpoint, (eachAirport['lat'], eachAirport['long']) ).nautical, eachAirport['code'])
         for eachAirport in allAirports] )
 
     # Output!
