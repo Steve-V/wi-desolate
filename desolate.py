@@ -46,12 +46,12 @@ def main():
     '''Figure out the place in a state that is furthest from the nearest airport'''
 
     # Airport data is stored on disk as a pickled OrderedDict in the working directory
-    allAirports = {
-        'long': -104.8493156, 'lat': 39.57013424, 'code': 'APA',
-        'long': -104.6731767, 'lat': 39.86167312, 'code': 'DEN',
-        'long': -104.5376322, 'lat': 39.78420646, 'code': 'FTG',
-        'long': -105.1172046, 'lat': 39.90881199, 'code': 'BJC',
-        }
+    allAirports = [
+        {'long': -104.8493156, 'lat': 39.57013424, 'code': 'APA'},
+        {'long': -104.6731767, 'lat': 39.86167312, 'code': 'DEN'},
+        {'long': -104.5376322, 'lat': 39.78420646, 'code': 'FTG'},
+        {'long': -105.1172046, 'lat': 39.90881199, 'code': 'BJC'}
+    ]
 
     # this list comprehension walks through allWisconsinPoints and returns a list of tuples: (the distance from a point to the nearest airport, and the point itself)
     # the max function pulls out only the highest-distance value from the list of tuples
